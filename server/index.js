@@ -10,7 +10,7 @@ const bookingRoutes = require("./routes/booking.js")
 const userRoutes = require("./routes/user.js")
 
 app.use(cors({
-    origin: ["http://localhost:3001", "https://dreamnestnew.netlify.app"]
+    origin: ["http://localhost:3001", "https://dream-nest-new.netlify.app"]
 }));
 app.use(express.json());
 app.use(express.static("public"));
