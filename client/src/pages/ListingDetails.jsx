@@ -2,44 +2,45 @@ import { useEffect, useState } from "react";
 import "../styles/ListingDetails.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import { facilities } from "../data";
-
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { DateRange } from "react-date-range";
+import { enGB } from "date-fns/locale"; // ✅ Fix: Ensure locale is defined
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import { useSelector } from "react-redux";
-import Footer from "../components/Footer"
+import Footer from "../components/Footer";
 
 const ListingDetails = () => {
   const [loading, setLoading] = useState(true);
-
   const { listingId } = useParams();
   const [listing, setListing] = useState(null);
+  const [error, setError] = useState("");
 
   const getListingDetails = async () => {
     try {
       const response = await fetch(
         `https://dream-nest-azure.vercel.app/properties/${listingId}`,
-        {
-          method: "GET",
-        }
+        { method: "GET" }
       );
 
+      if (!response.ok) throw new Error("Failed to fetch listing");
+
       const data = await response.json();
+      if (!data) throw new Error("Listing not found");
+
       setListing(data);
       setLoading(false);
     } catch (err) {
-      console.log("Fetch Listing Details Failed", err.message);
+      setError("Fetch Listing Details Failed. Try Again.");
+      console.error("Fetch Listing Details Failed", err.message);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     getListingDetails();
-  }, []);
-
-  console.log(listing)
-
+  }, [listingId]); // ✅ Fix: Add `listingId` as dependency
 
   /* BOOKING CALENDAR */
   const [dateRange, setDateRange] = useState([
@@ -51,70 +52,77 @@ const ListingDetails = () => {
   ]);
 
   const handleSelect = (ranges) => {
-    // Update the selected date range when user makes a selection
     setDateRange([ranges.selection]);
   };
 
-  const start = new Date(dateRange[0].startDate);
-  const end = new Date(dateRange[0].endDate);
-  const dayCount = Math.round(end - start) / (1000 * 60 * 60 * 24); // Calculate the difference in day unit
+  const start = dateRange[0]?.startDate || new Date(); // ✅ Fix: Handle undefined dates
+  const end = dateRange[0]?.endDate || new Date();
+  const dayCount = Math.max(Math.round((end - start) / (1000 * 60 * 60 * 24)), 1);
 
   /* SUBMIT BOOKING */
-  const customerId = useSelector((state) => state?.user?._id)
-
-  const navigate = useNavigate()
+  const customerId = useSelector((state) => state?.user?._id);
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
+    if (!listing || !customerId || !listing.creator) {
+      setError("Booking failed. Missing listing, host, or user information.");
+      return;
+    }
+
     try {
       const bookingForm = {
         customerId,
         listingId,
         hostId: listing.creator._id,
-        startDate: dateRange[0].startDate.toDateString(),
-        endDate: dateRange[0].endDate.toDateString(),
+        startDate: start.toISOString(),
+        endDate: end.toISOString(),
         totalPrice: listing.price * dayCount,
-      }
+      };
 
-      const response = await fetch(`https://dream-nest-azure.vercel.app/bookings/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookingForm)
-      })
+      const response = await fetch(
+        `https://dream-nest-azure.vercel.app/bookings/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bookingForm),
+        }
+      );
 
-      if (response.ok) {
-        navigate(`/${customerId}/trips`)
-      }
+      if (!response.ok) throw new Error("Booking request failed");
+
+      navigate(`/${customerId}/trips`);
     } catch (err) {
-      console.log("Submit Booking Failed.", err.message)
+      setError("Submit Booking Failed. Try Again.");
+      console.error("Submit Booking Failed.", err.message);
     }
-  }
+  };
 
   return loading ? (
     <Loader />
   ) : (
     <>
       <Navbar />
-
       <div className="listing-details">
+        {error && <p className="error">{error}</p>}
+
         <div className="title">
           <h1>{listing.title}</h1>
-          <div></div>
         </div>
 
         <div className="photos">
-          {listing.listingPhotoPaths?.map((item) => (
+          {listing.listingPhotoPaths?.map((item, index) => (
             <img
-              src={`https://dream-nest-azure.vercel.app/${item.replace("public", "")}`}
-              alt="listing photo"
+              key={index}
+              src={`https://dream-nest-azure.vercel.app/${item.replace("public/", "")}`} // ✅ Fix: Ensure correct image URL
+              alt="listing"
             />
           ))}
         </div>
 
         <h2>
-          {listing.type} in {listing.city}, {listing.province},{" "}
-          {listing.country}
+          {listing.type} in {listing.city}, {listing.province}, {listing.country}
         </h2>
         <p>
           {listing.guestCount} guests - {listing.bedroomCount} bedroom(s) -{" "}
@@ -123,14 +131,8 @@ const ListingDetails = () => {
         <hr />
 
         <div className="profile">
-          <img
-            src={`https://dream-nest-azure.vercel.app/${listing.creator.profileImagePath.replace(
-              "public",
-              ""
-            )}`}
-          />
           <h3>
-            Hosted by {listing.creator.firstName} {listing.creator.lastName}
+            Hosted by {listing.creator?.firstName || "Unknown"} {listing.creator?.lastName || "User"} {/* ✅ Fix: Handle missing creator */}
           </h3>
         </div>
         <hr />
@@ -147,13 +149,10 @@ const ListingDetails = () => {
           <div>
             <h2>What this place offers?</h2>
             <div className="amenities">
-              {listing.amenities[0].split(",").map((item, index) => (
+              {listing.amenities?.[0]?.split(",").map((item, index) => (
                 <div className="facility" key={index}>
                   <div className="facility_icon">
-                    {
-                      facilities.find((facility) => facility.name === item)
-                        ?.icon
-                    }
+                    {facilities.find((facility) => facility.name === item)?.icon}
                   </div>
                   <p>{item}</p>
                 </div>
@@ -163,26 +162,16 @@ const ListingDetails = () => {
 
           <div>
             <h2>How long do you want to stay?</h2>
-            <div className="date-range-calendar">
-              <DateRange ranges={dateRange} onChange={handleSelect} />
-              {dayCount > 1 ? (
-                <h2>
-                  ${listing.price} x {dayCount} nights
-                </h2>
-              ) : (
-                <h2>
-                  ${listing.price} x {dayCount} night
-                </h2>
-              )}
+            <DateRange
+              ranges={dateRange}
+              onChange={handleSelect}
+              minDate={new Date()}
+              locale={enGB} // ✅ Fix: Ensure localization is set properly
+            />
+            <p>Total Days: {dayCount}</p>
+            <p>Total Price: ${listing.price * dayCount}</p>
 
-              <h2>Total price: ${listing.price * dayCount}</h2>
-              <p>Start Date: {dateRange[0].startDate.toDateString()}</p>
-              <p>End Date: {dateRange[0].endDate.toDateString()}</p>
-
-              <button className="button" type="submit" onClick={handleSubmit}>
-                BOOKING
-              </button>
-            </div>
+            <button onClick={handleSubmit}>Book Now</button>
           </div>
         </div>
       </div>
