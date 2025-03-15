@@ -99,27 +99,7 @@ const RegisterPage = () => {
             <p style={{ color: "red" }}>Passwords are not matched!</p>
           )}
 
-          <input
-            id="image"
-            type="file"
-            name="profileImage"
-            accept="image/*"
-            style={{ display: "none" }}
-            onChange={handleChange}
-            required
-          />
-          <label htmlFor="image">
-            <img src="/assets/addImage.png" alt="add profile photo" />
-            <p>Upload Your Photo</p>
-          </label>
 
-          {formData.profileImage && (
-            <img
-              src={URL.createObjectURL(formData.profileImage)}
-              alt="profile photo"
-              style={{ maxWidth: "80px" }}
-            />
-          )}
           <button type="submit" disabled={!passwordMatch}>REGISTER</button>
         </form>
         <a href="/login">Already have an account? Log In Here</a>
