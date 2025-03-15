@@ -7,7 +7,7 @@ const User = require("../models/User");
 const router = express.Router();
 
 /* Ensure Upload Directory Exists */
-const uploadDir = "public/assets/";
+const uploadDir = "public/";
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
