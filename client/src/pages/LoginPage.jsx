@@ -16,7 +16,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`, {
+      const response = await fetch(`https://dream-nest-azure.vercel.app/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
