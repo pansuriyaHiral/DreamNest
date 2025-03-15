@@ -128,7 +128,7 @@ const CreateListing = () => {
             });
 
             /* Send a POST request to server */
-            const response = await fetch(`${process.env.SERVER_URL}/properties/create`, {
+            const response = await fetch(`https://dream-nest-azure.vercel.app/properties/create`, {
                 method: "POST",
                 body: listingForm,
             });

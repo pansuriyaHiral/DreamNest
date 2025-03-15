@@ -50,7 +50,7 @@ const ListingCard = ({
     const patchWishList = async () => {
         if (user?._id !== creator._id) {
             const response = await fetch(
-                `${process.env.SERVER_URL}/users/${user?._id}/${listingId}`,
+                `https://dream-nest-azure.vercel.app/users/${user?._id}/${listingId}`,
                 {
                     method: "PATCH",
                     header: {
@@ -78,7 +78,7 @@ const ListingCard = ({
                     {listingPhotoPaths?.map((photo, index) => (
                         <div key={index} className="slide">
                             <img
-                                src={`${process.env.SERVER_URL}/${photo?.replace("public", "")}`}
+                                src={`https://dream-nest-azure.vercel.app/${photo?.replace("public", "")}`}
                                 alt={`photo ${index + 1}`}
                             />
                             <div

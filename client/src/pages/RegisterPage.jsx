@@ -39,7 +39,7 @@ const RegisterPage = () => {
         register_form.append(key, formData[key])
       }
 
-      const response = await fetch(`${process.env.SERVER_URL}/auth/register`, {
+      const response = await fetch(`https://dream-nest-azure.vercel.app/auth/register`, {
         method: "POST",
         body: register_form
       })

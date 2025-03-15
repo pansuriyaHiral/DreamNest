@@ -17,7 +17,7 @@ const ReservationList = () => {
     const getReservationList = async () => {
         try {
             const response = await fetch(
-                `${process.env.SERVER_URL}/users/${userId}/reservations`,
+                `https://dream-nest-azure.vercel.app/users/${userId}/reservations`,
                 {
                     method: "GET",
                 }

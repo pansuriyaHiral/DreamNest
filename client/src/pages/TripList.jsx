@@ -17,7 +17,7 @@ const TripList = () => {
     const getTripList = async () => {
         try {
             const response = await fetch(
-                `${process.env.SERVER_URL}/users/${userId}/trips`,
+                `https://dream-nest-azure.vercel.app/users/${userId}/trips`,
                 {
                     method: "GET",
                 }

@@ -60,7 +60,7 @@ const Navbar = () => {
                         <Person sx={{ color: variables.darkgrey }} />
                     ) : (
                         <img
-                            src={`${process.env.SERVER_URL}/${user.profileImagePath.replace(
+                            src={`https://dream-nest-azure.vercel.app/${user.profileImagePath.replace(
                                 "public",
                                 ""
                             )}`}

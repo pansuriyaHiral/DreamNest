@@ -20,7 +20,7 @@ const ListingDetails = () => {
   const getListingDetails = async () => {
     try {
       const response = await fetch(
-        `${process.env.SERVER_URL}/properties/${listingId}`,
+        `https://dream-nest-azure.vercel.app/properties/${listingId}`,
         {
           method: "GET",
         }
@@ -75,7 +75,7 @@ const ListingDetails = () => {
         totalPrice: listing.price * dayCount,
       }
 
-      const response = await fetch(`${process.env.SERVER_URL}/bookings/create`, {
+      const response = await fetch(`https://dream-nest-azure.vercel.app/bookings/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +106,7 @@ const ListingDetails = () => {
         <div className="photos">
           {listing.listingPhotoPaths?.map((item) => (
             <img
-              src={`${process.env.SERVER_URL}/${item.replace("public", "")}`}
+              src={`https://dream-nest-azure.vercel.app/${item.replace("public", "")}`}
               alt="listing photo"
             />
           ))}
@@ -124,7 +124,7 @@ const ListingDetails = () => {
 
         <div className="profile">
           <img
-            src={`${process.env.SERVER_URL}/${listing.creator.profileImagePath.replace(
+            src={`https://dream-nest-azure.vercel.app/${listing.creator.profileImagePath.replace(
               "public",
               ""
             )}`}
