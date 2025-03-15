@@ -17,7 +17,7 @@ const SearchPage = () => {
 
     const getSearchListings = async () => {
         try {
-            const response = await fetch(`http://localhost:3001/properties/search/${search}`, {
+            const response = await fetch(`${process.env.SERVER_URL}/properties/search/${search}`, {
                 method: "GET"
             })
 
