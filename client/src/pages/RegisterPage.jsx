@@ -9,7 +9,6 @@ const RegisterPage = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    profileImage: null,
   });
 
   const handleChange = (e) => {
@@ -17,7 +16,7 @@ const RegisterPage = () => {
     setFormData({
       ...formData,
       [name]: value,
-      [name]: name === "profileImage" ? files[0] : value,
+      //[name]: name === "profileImage" ? files[0] : value,
     });
   };
 
