@@ -41,7 +41,7 @@ const RegisterPage = () => {
 
       const response = await fetch(`https://dream-nest-azure.vercel.app/auth/register`, {
         method: "POST",
-        body: register_form
+        body: JSON.stringify({ firstName, lastName, email, password, confirmPassword })
       })
 
       if (response.ok) {
