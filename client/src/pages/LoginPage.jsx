@@ -16,7 +16,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`/auth/login`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
